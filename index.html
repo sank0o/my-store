@@ -2,57 +2,144 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ELITE | Living Store</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ELITE | Luxury Experience</title>
+    
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
     <style>
-        body { font-family: 'Cairo', sans-serif; background: #fff; overflow-x: hidden; }
+        :root { --p-color: #000; --s-color: #fff; --gray: #fdfdfd; }
+        * { -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--s-color); overflow-x: hidden; color: #1a1a1a; }
+        
+        /* تحسينات المظهر */
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .hero-gradient { background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%); }
+        
+        /* تأثيرات الفخامة */
+        .luxury-shadow { box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03); }
+        .product-card { border-radius: 2rem; overflow: hidden; background: #fff; border: 1px solid #eee; transition: all 0.4s ease; }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .product-image { transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .product-card:hover .product-image { transform: scale(1.05); }
+        
+        /* تحسينات الموبايل */
+        @media (max-width: 768px) {
+            .mobile-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .mobile-nav { height: 70px; }
+            .safe-area-pb { padding-bottom: env(safe-area-inset-bottom); }
+        }
+        
+        /* تأثيرات الحيوية */
         .story-ring { border: 2px solid #ff4d4d; padding: 2px; border-radius: 50%; width: 70px; height: 70px; object-fit: cover; }
-        .product-card { transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .product-card:active { transform: scale(0.95); }
-        .live-notif { position: fixed; bottom: 80px; right: 20px; background: white; padding: 10px 20px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 100; display: flex; items-center: center; gap: 10px; border: 1px solid #eee; animation: fadeInUp 1s, fadeOutDown 1s 4s forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
-        @keyframes loading { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+        .live-notif { position: fixed; bottom: 80px; right: 20px; background: white; padding: 10px 20px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 100; display: flex; items-center: center; gap: 10px; border: 1px solid #eee; }
+        .badge-new { background: #000; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 4px; }
+        .discount-badge { background: #ef4444; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 4px; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #000; }
+        input, textarea { border: 1px solid #eee; padding: 12px; border-radius: 15px; outline: none; width: 100%; transition: 0.3s; }
+        input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
+        .btn-luxury:hover { background: #333; letter-spacing: 1px; }
     </style>
 </head>
-<body>
+<body class="safe-area-pb">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
         const App = () => {
-            const [view, setView] = useState('shop');
+            const [view, setView] = useState('shop'); // shop, cart
             const [cart, setCart] = useState([]);
+            const [isAdmin, setIsAdmin] = useState(false);
+            const [showAddModal, setShowAddModal] = useState(false);
             const [showNotif, setShowNotif] = useState(false);
             const [lastBuyer, setLastBuyer] = useState("");
+
+            // المنتجات المحدثة
+            const [products, setProducts] = useState([
+                { 
+                    id: 1, name: "ساعة رويال أواك كلاسيك", price: 450000, oldPrice: 600000, 
+                    img: "https://images.unsplash.com/photo-1547996160-81dfa63595dd?w=800", 
+                    category: "ساعات", tag: "جديد", 
+                    desc: "إصدار محدود من الفولاذ المقاوم للصدأ بتصميم أنيق." 
+                },
+                { 
+                    id: 2, name: "عطر ليجند نوار", price: 89000, oldPrice: 110000, 
+                    img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800", 
+                    category: "إكسسوارات", tag: "خصم", 
+                    desc: "رائحة خشبية فريدة تعكس الثقة والتميز." 
+                },
+                { 
+                    id: 3, name: "حقيبة يد جلدية فاخرة", price: 320000, oldPrice: null, 
+                    img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800", 
+                    category: "إكسسوارات", tag: "الأكثر مبيعاً", 
+                    desc: "صناعة يدوية من أجود أنواع الجلود الإيطالية." 
+                },
+                { 
+                    id: 4, name: "فستان سهرة ملكي", price: 550000, oldPrice: 750000, 
+                    img: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500", 
+                    category: "ملابس", tag: "تخفيضات", 
+                    desc: "تصميم راقٍ يبرز جمالك في المناسبات الخاصة." 
+                }
+            ]);
 
             const buyers = ["سارة من بغداد", "أحمد من البصرة", "مريم من أربيل", "علي من النجف"];
 
             useEffect(() => {
+                if (window.lucide) lucide.createIcons();
                 const interval = setInterval(() => {
                     setLastBuyer(buyers[Math.floor(Math.random() * buyers.length)]);
                     setShowNotif(true);
                     setTimeout(() => setShowNotif(false), 5000);
                 }, 15000);
                 return () => clearInterval(interval);
-            }, []);
+            }, [view, products, isAdmin]);
 
-            const products = [
-                { id: 1, name: "فستان السهرة الملكي", price: 85000, img: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500", tag: "الأكثر مبيعاً" },
-                { id: 2, name: "طقم كاجوال عصري", price: 42000, img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500", tag: "جديد" },
-                { id: 3, name: "حقيبة يد جلدية", price: 35000, img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=500", tag: "تصفية" },
-                { id: 4, name: "حذاء كعب كلاسيك", price: 29000, img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", tag: "جديد" }
-            ];
+            const addToCart = (product) => {
+                setCart([...cart, { ...product, cartId: Date.now() }]);
+                alert("تمت إضافة القطعة إلى حقيبتك");
+            };
+
+            const removeFromCart = (id) => {
+                setCart(cart.filter(item => item.cartId !== id));
+            };
+
+            const totalPrice = cart.reduce((sum, item) => sum + Number(item.price), 0);
+
+            const sendWhatsApp = () => {
+                const message = `طلب جديد من متجر ELITE:\n` + 
+                                cart.map(i => `- ${i.name} (${i.price.toLocaleString()} د.ع)`).join('\n') + 
+                                `\nإجمالي المبلغ: ${totalPrice.toLocaleString()} د.ع`;
+                window.open(`https://wa.me/رقمك_هنا?text=${encodeURIComponent(message)}`);
+            };
+
+            const submitNewProduct = (e) => {
+                e.preventDefault();
+                const f = new FormData(e.target);
+                const newP = {
+                    id: Date.now(),
+                    name: f.get('n'),
+                    price: f.get('p'),
+                    img: f.get('i'),
+                    desc: f.get('d'),
+                    category: "وصل حديثاً",
+                    tag: "جديد"
+                };
+                setProducts([newP, ...products]);
+                setShowAddModal(false);
+            };
 
             return (
-                <div className="min-h-screen">
+                <div className="relative">
                     {/* Live Notification */}
                     {showNotif && (
                         <div className="live-notif animate__animated animate__fadeInUp">
@@ -61,109 +148,115 @@
                         </div>
                     )}
 
-                    {/* Header */}
-                    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md px-5 h-16 flex items-center justify-between border-b">
-                        <div className="text-2xl font-black tracking-tighter animate__animated animate__pulse animate__infinite">ELITE.</div>
-                        <div className="flex gap-4">
-                            <button onClick={() => setView('cart')} className="relative p-2">
-                                🛒 <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{cart.length}</span>
+                    {/* Navigation */}
+                    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 px-6 py-4 glass-nav flex justify-between items-center ${isNavScrolled ? 'shadow-sm' : ''}`}>
+                        <h1 className="text-2xl font-black tracking-tighter cursor-pointer animate__animated animate__pulse animate__infinite" onClick={() => setView('shop')}>ELITE.</h1>
+                        <div className="flex gap-6 items-center">
+                            <button onClick={() => setIsAdmin(!isAdmin)} className="text-[10px] font-bold bg-black text-white px-3 py-1 rounded-full uppercase">
+                                {isAdmin ? 'Logout Admin' : 'Admin Access'}
                             </button>
+                            <div className="cursor-pointer relative" onClick={() => setView('cart')}>
+                                <i data-lucide="shopping-bag"></i>
+                                {cart.length > 0 && <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{cart.length}</span>}
+                            </div>
                         </div>
                     </nav>
 
-                    {/* Stories Section (روح الموقع) */}
-                    <div className="flex overflow-x-auto no-scrollbar gap-5 p-5 bg-white shadow-sm">
-                        {[1, 2, 3, 4, 5].map(i => (
-                            <div key={i} className="flex flex-col items-center gap-1 flex-shrink-0">
-                                <img src={`https://i.pravatar.cc/150?u=${i}`} className="story-ring hover:scale-110 transition cursor-pointer" />
-                                <span className="text-[10px] text-gray-500 font-bold">تنسيقاتنا</span>
+                    {view === 'shop' && (
+                        <div>
+                            {/* Hero */}
+                            <div className="relative h-[60vh] bg-black flex items-center justify-center overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1600" className="absolute w-full h-full object-cover opacity-60 shadow-inner" />
+                                <div className="hero-gradient absolute inset-0"></div>
+                                <h2 className="relative z-10 text-6xl md:text-8xl font-black italic text-white tracking-tighter">ELITE.</h2>
                             </div>
-                        ))}
-                    </div>
 
-                    <main className="pb-24">
-                        {view === 'shop' && (
-                            <div>
-                                <div className="p-6">
-                                    <h2 className="text-xl font-black mb-4 flex items-center gap-2">
-                                        تسوقي حسب الفئة <span className="text-xs font-normal text-blue-500 underline">عرض الكل</span>
-                                    </h2>
+                            {/* Admin Bar */}
+                            {user === 'admin' && (
+                                <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-20">
+                                    <button onClick={() => setShowAddModal(true)} className="bg-white text-black px-10 py-5 rounded-full font-black shadow-2xl flex items-center gap-3 border border-black/5 hover:scale-105 transition-transform">
+                                        <i data-lucide="plus"></i> إضافة منتج جديد
+                                    </button>
                                 </div>
+                            )}
 
-                                <div className="grid grid-cols-2 gap-3 px-3">
+                            {/* Content */}
+                            <main className="max-w-7xl mx-auto py-20 px-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 product-grid">
                                     {products.map((p, idx) => (
-                                        <div key={p.id} 
-                                             className={`product-card bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-50 animate__animated animate__fadeInUp`} 
-                                             style={{animationDelay: `${idx * 0.1}s`}}>
-                                            <div className="relative aspect-[4/5] overflow-hidden">
-                                                <img src={p.img} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
-                                                <div className="absolute top-3 left-3 bg-white/90 text-[9px] px-2 py-1 rounded-full font-bold shadow-sm">{p.tag}</div>
-                                                <button 
-                                                    onClick={() => setCart([...cart, p])}
-                                                    className="absolute bottom-3 right-3 bg-black text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition"
-                                                >
-                                                    +
+                                        <div key={p.id} className="product-card group cursor-pointer relative animate__animated animate__fadeInUp" style={{animationDelay: `${idx * 0.1}s`}}>
+                                            {user === 'admin' && (
+                                                <button onClick={(e) => {e.stopPropagation(); setProducts(products.filter(x => x.id !== p.id))}} className="absolute top-4 left-4 z-20 bg-white text-red-500 p-3 rounded-full shadow-xl hover:bg-red-500 hover:text-white transition-all">
+                                                    <i data-lucide="trash-2" className="w-4 h-4"></i>
                                                 </button>
+                                            )}
+                                            <div className="aspect-[4/5] overflow-hidden rounded-[3rem] bg-gray-100 mb-6 relative border border-black/5">
+                                                <img src={p.img} className="product-image w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" onError={(e) => e.target.src='https://via.placeholder.com/800x1000?text=رابط+الصورة+غير+صحيح'} />
+                                                <div className="absolute top-3 left-3 bg-white/90 text-[9px] px-2 py-1 rounded-full font-bold shadow-sm">{p.tag}</div>
                                             </div>
-                                            <div className="p-4">
-                                                <h3 className="text-[12px] font-bold text-gray-800 truncate">{p.name}</h3>
-                                                <p className="text-black font-black mt-1">{p.price.toLocaleString()} د.ع</p>
+                                            <div className="px-4 p-6">
+                                                <div className="flex justify-between items-start mb-2 font-bold">
+                                                    <div><h4 className="text-xl">{p.name}</h4><p className="text-gray-400 text-[10px] uppercase tracking-widest">{p.category}</p></div>
+                                                    <div className="text-right">
+                                                        <span className="text-2xl font-black text-blue-600">{p.price.toLocaleString()} د.ع</span>
+                                                        {p.oldPrice && <p className="text-xs text-gray-400 line-through">{p.oldPrice.toLocaleString()} د.ع</p>}
+                                                    </div>
+                                                </div>
+                                                <p className="text-gray-500 text-sm leading-relaxed mb-6">{p.desc}</p>
+                                                <button onClick={() => addToCart(p)} className="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold hover:bg-black transition-colors active:scale-95 btn-active">أضف للحقيبة +</button>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                            </div>
-                        )}
+                            </main>
+                        </div>
+                    )}
 
-                        {view === 'cart' && (
-                            <div className="p-6 animate__animated animate__fadeIn">
-                                <h2 className="text-2xl font-black mb-8">حقيبة التسوق 🛍️</h2>
-                                {cart.length === 0 ? (
-                                    <div className="text-center py-20 text-gray-400">
-                                        <p>لم تضف شيئاً بعد..</p>
-                                        <button onClick={() => setView('shop')} className="mt-4 text-black underline font-bold">اذهبي للتسوق الآن</button>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {cart.map((item, i) => (
-                                            <div key={i} className="flex gap-4 p-3 bg-gray-50 rounded-2xl animate__animated animate__slideInRight">
-                                                <img src={item.img} className="w-20 h-24 object-cover rounded-xl" />
-                                                <div className="flex flex-col justify-center">
-                                                    <h4 className="font-bold text-sm">{item.name}</h4>
-                                                    <p className="font-black text-blue-600">{item.price} د.ع</p>
+                    {view === 'cart' && (
+                        <div className="pt-32 max-w-2xl mx-auto px-6 pb-20 text-center animate__animated animate__fadeIn">
+                            <h2 className="text-4xl font-black mb-10 italic">MY CART.</h2>
+                            {cart.length === 0 ? <p className="text-gray-400 py-20 border-t border-b">السلة فارغة</p> : (
+                                <div className="space-y-4">
+                                    {cart.map((item, i) => (
+                                        <div key={i} className="flex justify-between items-center bg-gray-50 p-6 rounded-[2.5rem] animate__animated animate__slideInRight">
+                                            <div className="flex items-center gap-4 text-right">
+                                                <img src={item.img} className="w-16 h-16 rounded-2xl object-cover" />
+                                                <div>
+                                                    <p className="font-bold">{item.name}</p>
+                                                    <p className="text-xs text-blue-600 font-bold">{item.price.toLocaleString()} د.ع</p>
                                                 </div>
                                             </div>
-                                        ))}
-                                        <div className="pt-10">
-                                            <button className="w-full bg-green-500 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-green-100 flex items-center justify-center gap-2 active:scale-95 transition">
-                                                تأكيد الطلب عبر واتساب 💬
-                                            </button>
+                                            <button onClick={() => removeFromCart(item.cartId)} className="text-red-400 text-xs p-2">إزالة</button>
                                         </div>
+                                    ))}
+                                    <div className="pt-10 border-t flex justify-between items-end">
+                                        <div>
+                                            <p className="text-xs text-gray-400 uppercase tracking-[0.3em] mb-2">Total Price</p>
+                                            <span className="text-3xl font-light">{totalPrice.toLocaleString()} د.ع</span>
+                                        </div>
+                                        <button onClick={sendWhatsApp} className="w-full bg-green-500 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-green-100 flex items-center justify-center gap-2 active:scale-95 transition btn-active">تأكيد الطلب عبر واتساب 💬</button>
                                     </div>
-                                )}
-                            </div>
-                        )}
-                    </main>
+                                </div>
+                            )}
+                            <button onClick={() => setView('shop')} className="w-full mt-5 text-gray-400 text-sm">العودة للتسوق</button>
+                        </div>
+                    )}
 
-                    {/* Tab Bar (الروح الحقيقية للتطبيق) */}
-                    <div className="fixed bottom-0 w-full bg-white/90 backdrop-blur-md border-t flex justify-around py-3 px-2 z-[200]">
-                        <button onClick={() => setView('shop')} className={`flex flex-col items-center gap-1 ${view === 'shop' ? 'text-black' : 'text-gray-300'}`}>
-                            <span className="text-xl">🏠</span>
-                            <span className="text-[10px] font-bold">الرئيسية</span>
-                        </button>
-                        <button className="flex flex-col items-center gap-1 text-gray-300 opacity-50">
-                            <span className="text-xl">🔍</span>
-                            <span className="text-[10px] font-bold">البحث</span>
-                        </button>
-                        <button onClick={() => setView('cart')} className={`flex flex-col items-center gap-1 ${view === 'cart' ? 'text-black' : 'text-gray-300'}`}>
-                            <span className="text-xl relative">🛍️ {cart.length > 0 && <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>}</span>
-                            <span className="text-[10px] font-bold">سلتك</span>
-                        </button>
-                        <button className="flex flex-col items-center gap-1 text-gray-300 opacity-50">
-                            <span className="text-xl">👤</span>
-                            <span className="text-[10px] font-bold">حسابي</span>
-                        </button>
-                    </div>
+                    {showAddModal && (
+                        <div className="fixed inset-0 z-[200] modal-bg flex items-center justify-center p-4 backdrop-blur-sm animate__animated animate__fadeIn">
+                            <form onSubmit={submitNewProduct} className="bg-white p-8 rounded-[2.5rem] w-full max-w-lg shadow-2xl space-y-4 animate__animated animate__fadeInUp">
+                                <h2 className="text-2xl font-black mb-6">إضافة قطعة جديدة</h2>
+                                <input name="n" placeholder="اسم المنتج" required />
+                                <input name="p" type="number" placeholder="السعر" required />
+                                <input name="i" placeholder="رابط الصورة المباشر" required />
+                                <textarea name="d" placeholder="وصف قصير" rows="3"></textarea>
+                                <button className="w-full bg-black text-white py-4 rounded-2xl font-black shadow-lg hover:bg-black active:scale-95 transition-all duration-300 btn-luxury">حفظ ونشر</button>
+                                <button type="button" onClick={() => setShowAddModal(false)} className="w-full text-xs text-gray-400 mt-2">إلغاء</button>
+                            </form>
+                        </div>
+                    )}
+
+                    <footer className="py-20 border-t text-center text-[10px] text-gray-400 uppercase tracking-[0.5em] safe-area-pb">Elite Store © 2026 | Pure Minimalist Luxury</footer>
                 </div>
             );
         };
