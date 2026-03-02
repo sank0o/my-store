@@ -2,163 +2,122 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELITE | تجربة تسوق فاخرة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ELITE X DEFACTO STYLE</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Cairo', sans-serif; background: #fff; color: #1a1a1a; }
-        .luxury-shadow { box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03); }
-        .product-card img { transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1); }
-        .product-card:hover img { transform: scale(1.08); }
-        .btn-luxury { background: #000; color: #fff; transition: all 0.3s; position: relative; overflow: hidden; }
-        .btn-luxury:hover { background: #333; letter-spacing: 1px; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #000; }
+        body { font-family: 'Cairo', sans-serif; background: #fff; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
+        @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
+        .badge-new { background: #000; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 4px; }
+        .discount-badge { background: #ef4444; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 4px; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState } = React;
 
         const App = () => {
-            const [view, setView] = useState('shop'); // shop, cart, checkout
-            const [products, setProducts] = useState([
-                { id: 1, name: "ساعة رويال أواك", price: 4500, img: "https://images.unsplash.com/photo-1547996160-81dfa63595dd?w=800", desc: "إصدار محدود من الفولاذ المقاوم للصدأ." },
-                { id: 2, name: "عطر ليجند نوار", price: 890, img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800", desc: "رائحة خشبية فريدة تدوم طويلاً." },
-                { id: 3, name: "حقيبة جلد إيطالي", price: 3200, img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800", desc: "صناعة يدوية من أجود أنواع الجلود." }
-            ]);
+            const [view, setView] = useState('shop');
             const [cart, setCart] = useState([]);
-            const [isAdmin, setIsAdmin] = useState(false);
+            const [category, setCategory] = useState('الكل');
 
-            const addToCart = (product) => {
-                setCart([...cart, { ...product, cartId: Date.now() }]);
-                alert("تمت إضافة القطعة إلى حقيبتك");
-            };
-
-            const removeFromCart = (id) => {
-                setCart(cart.filter(item => item.cartId !== id));
-            };
-
-            const totalPrice = cart.reduce((sum, item) => sum + Number(item.price), 0);
-
-            const sendToWhatsApp = () => {
-                const message = `طلب جديد من متجر ELITE:\n` + 
-                                cart.map(i => `- ${i.name} (${i.price} ر.س)`).join('\n') + 
-                                `\nإجمالي المبلغ: ${totalPrice} ر.س`;
-                window.open(`https://wa.me/966XXXXXXXXX?text=${encodeURIComponent(message)}`);
-            };
+            const products = [
+                { id: 1, name: "فستان ناعم ميدي", price: 45000, oldPrice: 60000, img: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=500", tag: "جديد" },
+                { id: 2, name: "قميص قطني مخطط", price: 25000, oldPrice: 35000, img: "https://images.unsplash.com/photo-1598033129183-c4f50c717658?w=500", tag: "خصم" },
+                { id: 3, name: "بنطلون جينز كلاسيك", price: 38000, oldPrice: null, img: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500", tag: "جديد" },
+                { id: 4, name: "جاكيت خريفي أنيق", price: 55000, oldPrice: 75000, img: "https://images.unsplash.com/photo-1539573080511-b3fb10db40b7?w=500", tag: "خصم" }
+            ];
 
             return (
-                <div className="min-h-screen flex flex-col">
-                    {/* Navigation */}
-                    <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 px-8 py-5 flex justify-between items-center">
-                        <h1 className="text-2xl font-black tracking-[0.2em] cursor-pointer" onClick={() => setView('shop')}>ELITE</h1>
-                        <div className="flex gap-8 items-center font-bold text-sm tracking-widest">
-                            <span className="cursor-pointer hover:opacity-50" onClick={() => setView('shop')}>المتجر</span>
-                            <div className="relative cursor-pointer" onClick={() => setView('cart')}>
-                                <span>الحقيبة</span>
-                                {cart.length > 0 && <span className="absolute -top-3 -right-4 bg-black text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center">{cart.length}</span>}
-                            </div>
-                            <button onClick={() => setIsAdmin(!isAdmin)} className="bg-gray-100 px-3 py-1 rounded text-[10px]">{isAdmin ? 'EXIT' : 'ADMIN'}</button>
+                <div className="min-h-screen">
+                    {/* شريط الإعلانات العلوي (مثل DeFacto) */}
+                    <div className="bg-black text-white text-[10px] py-2 text-center font-bold tracking-widest overflow-hidden">
+                        <div className="animate-pulse">شحن مجاني للطلبات أكثر من 100 ألف دينار 🚚</div>
+                    </div>
+
+                    {/* الهيدر */}
+                    <nav className="sticky top-0 z-50 bg-white border-b px-4 h-14 flex items-center justify-between">
+                        <div className="text-xl font-black italic tracking-tighter">ELITE.</div>
+                        <div className="flex gap-4 items-center">
+                            <span className="text-sm font-bold cursor-pointer" onClick={() => setView('cart')}>
+                                🛒 ({cart.length})
+                            </span>
                         </div>
                     </nav>
 
-                    {/* Main Content */}
-                    <main className="mt-24 flex-grow container mx-auto px-6 max-w-7xl">
-                        
+                    {/* شريط الفئات السريع (مثل DeFacto) */}
+                    <div className="flex overflow-x-auto no-scrollbar gap-2 p-4 border-b bg-gray-50">
+                        {['الكل', 'وصلنا حديثاً', 'تخفيضات', 'الأكثر مبيعاً'].map(cat => (
+                            <button 
+                                key={cat}
+                                onClick={() => setCategory(cat)}
+                                className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold border transition ${category === cat ? 'bg-black text-white' : 'bg-white text-gray-500'}`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+
+                    <main className="pb-20">
                         {view === 'shop' && (
-                            <section className="animate-fade-in">
-                                <header className="py-20 text-center">
-                                    <h2 className="text-xs uppercase tracking-[0.5em] text-gray-400 mb-4">New Collection 2026</h2>
-                                    <h3 className="text-5xl font-light tracking-tight">مجموعة النخبة المختارة</h3>
-                                </header>
-
-                                {isAdmin && (
-                                    <div className="mb-20 p-10 border border-black rounded-sm max-w-2xl mx-auto">
-                                        <h4 className="font-bold mb-6 underline">إضافة قطعة جديدة</h4>
-                                        <form className="grid gap-4" onSubmit={(e) => {
-                                            e.preventDefault();
-                                            const f = new FormData(e.target);
-                                            setProducts([{id: Date.now(), name: f.get('n'), price: f.get('p'), img: f.get('i'), desc: f.get('d')}, ...products]);
-                                            e.target.reset();
-                                        }}>
-                                            <input name="n" placeholder="اسم المنتج" className="border-b p-2 outline-none" required />
-                                            <input name="p" placeholder="السعر" className="border-b p-2 outline-none" required />
-                                            <input name="i" placeholder="رابط الصورة المباشر" className="border-b p-2 outline-none" required />
-                                            <textarea name="d" placeholder="وصف قصير" className="border-b p-2 outline-none" />
-                                            <button className="btn-luxury py-3 mt-4 uppercase text-xs font-bold">حفظ في المتجر</button>
-                                        </form>
-                                    </div>
-                                )}
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
-                                    {products.map(p => (
-                                        <div key={p.id} className="product-card group cursor-pointer">
-                                            <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 mb-6">
-                                                <img src={p.img} className="w-full h-full object-cover" />
-                                                <button 
-                                                    onClick={() => addToCart(p)}
-                                                    className="absolute bottom-0 w-full py-4 bg-black text-white opacity-0 group-hover:opacity-100 transition-all duration-300 text-xs tracking-widest font-bold"
-                                                >
-                                                    أضف للحقيبة +
-                                                </button>
+                            <div className="product-grid">
+                                {products.map(p => (
+                                    <div key={p.id} className="relative group" onClick={() => {setCart([...cart, p]); alert('تمت الإضافة للسلة')}}>
+                                        <div className="aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg relative">
+                                            <img src={p.img} className="w-full h-full object-cover" loading="lazy" />
+                                            <div className="absolute top-2 right-2">
+                                                {p.tag === "جديد" ? <span className="badge-new">جديد</span> : <span className="discount-badge">تخفيض</span>}
                                             </div>
-                                            <div className="text-center">
-                                                <h4 className="font-bold text-lg mb-1">{p.name}</h4>
-                                                <p className="text-gray-400 text-xs mb-3 tracking-wide">{p.desc}</p>
-                                                <span className="text-sm font-light tracking-widest">{p.price} ر.س</span>
-                                            </div>
-                                            {isAdmin && (
-                                                <button onClick={() => setProducts(products.filter(x => x.id !== p.id))} className="w-full text-[10px] mt-4 text-red-400 hover:text-red-600">إزالة من العرض</button>
-                                            )}
                                         </div>
-                                    ))}
-                                </div>
-                            </section>
+                                        <div className="py-3 px-1">
+                                            <h3 className="text-[11px] text-gray-500 truncate mb-1">{p.name}</h3>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs font-bold text-black">{p.price} د.ع</span>
+                                                {p.oldPrice && <span className="text-[10px] text-gray-400 line-through">{p.oldPrice} د.ع</span>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         )}
 
                         {view === 'cart' && (
-                            <section className="py-20 max-w-2xl mx-auto animate-fade-in">
-                                <h2 className="text-3xl font-light mb-12 text-center tracking-widest">حقيبة التسوق</h2>
-                                {cart.length === 0 ? (
-                                    <div className="text-center py-20 border-t border-b">
-                                        <p className="text-gray-400 mb-8 uppercase tracking-widest text-xs">حقيبتك فارغة حالياً</p>
-                                        <button onClick={() => setView('shop')} className="btn-luxury px-10 py-4 text-[10px] font-bold">العودة للمتجر</button>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-8">
-                                        {cart.map(item => (
-                                            <div key={item.cartId} className="flex gap-6 items-center border-b pb-8">
-                                                <img src={item.img} className="w-24 h-32 object-cover" />
+                            <div className="p-5 text-center">
+                                <h2 className="text-xl font-bold mb-10">حقيبة التسوق</h2>
+                                {cart.length === 0 ? <p className="text-gray-400">حقيبتك فارغة</p> : (
+                                    <div className="space-y-4">
+                                        {cart.map((item, i) => (
+                                            <div key={i} className="flex gap-4 border-b pb-4 text-right">
+                                                <img src={item.img} className="w-16 h-20 object-cover" />
                                                 <div className="flex-grow">
-                                                    <h4 className="font-bold">{item.name}</h4>
-                                                    <p className="text-sm text-gray-400">{item.price} ر.س</p>
+                                                    <p className="text-xs font-bold">{item.name}</p>
+                                                    <p className="text-xs text-blue-600">{item.price} د.ع</p>
                                                 </div>
-                                                <button onClick={() => removeFromCart(item.cartId)} className="text-xs text-gray-300 hover:text-black">إزالة</button>
                                             </div>
                                         ))}
-                                        <div className="pt-10 flex justify-between items-end">
-                                            <div>
-                                                <p className="text-xs text-gray-400 uppercase tracking-[0.3em] mb-2">Total Price</p>
-                                                <span className="text-3xl font-light">{totalPrice} ر.س</span>
-                                            </div>
-                                            <button onClick={sendToWhatsApp} className="btn-luxury px-12 py-5 text-xs font-bold tracking-widest">إتمام الطلب عبر واتساب</button>
-                                        </div>
+                                        <button className="w-full bg-black text-white py-4 font-bold mt-10 rounded-lg">إتمام الطلب عبر واتساب</button>
                                     </div>
                                 )}
-                            </section>
+                                <button onClick={() => setView('shop')} className="mt-5 text-gray-400 text-xs">العودة للتسوق</button>
+                            </div>
                         )}
                     </main>
 
-                    <footer className="py-12 border-t border-gray-100 text-center">
-                        <p className="text-[10px] uppercase tracking-[0.8em] text-gray-300">Elite Store — Luxury Experience</p>
-                    </footer>
+                    {/* الفوتر الثابت (Tab Bar) للجوال */}
+                    <div className="fixed bottom-0 w-full bg-white border-t flex justify-around py-3 text-[10px] font-bold text-gray-400">
+                        <div onClick={() => setView('shop')} className={view === 'shop' ? 'text-black' : ''}>🏠 الرئيسية</div>
+                        <div onClick={() => setView('shop')} className="opacity-50">🔍 بحث</div>
+                        <div onClick={() => setView('cart')} className={view === 'cart' ? 'text-black' : ''}>🛒 السلة ({cart.length})</div>
+                        <div className="opacity-50">👤 حسابي</div>
+                    </div>
                 </div>
             );
         };
