@@ -3,447 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ELITE TITAN | نظام إدارة التجارة المتكامل</title>
+    <title>ELITE INFINITY | التجربة الغامرة</title>
     
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;900&display=swap" rel="stylesheet">
     
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
     <style>
-        /* نظام الألوان المتغير */
-        :root {
-            --p-black: #050505;
-            --p-white: #ffffff;
-            --p-accent: #3b82f6;
-            --p-gray: #f9f9f9;
-            --p-card: #ffffff;
-            --p-text: #111111;
-        }
-
-        [data-theme='dark'] {
-            --p-black: #ffffff;
-            --p-white: #0a0a0a;
-            --p-gray: #151515;
-            --p-card: #1c1c1c;
-            --p-text: #eeeeee;
-        }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--p-white);
-            color: var(--p-text);
-            transition: all 0.5s ease;
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: #000; 
+            color: #fff; 
+            overflow-x: hidden;
             margin: 0;
-            padding: 0;
-            -webkit-font-smoothing: antialiased;
         }
 
-        /* تخصيص السكرول بار */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--p-white); }
-        ::-webkit-scrollbar-thumb { background: var(--p-black); border-radius: 10px; }
-
-        /* تأثيرات الفخامة والتحريك */
-        .glass-header {
-            background: rgba(var(--p-white), 0.7);
-            backdrop-filter: saturate(180%) blur(15px);
-            z-index: 1000;
-        }
-
-        .luxury-card {
-            border: 1px solid rgba(0,0,0,0.03);
-            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-
-        .luxury-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.15);
-        }
-
-        .image-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 2rem;
-            aspect-ratio: 3/4;
-        }
-
-        .product-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 1.2s ease;
-        }
-
-        .luxury-card:hover .product-img {
-            transform: scale(1.1);
-        }
-
-        .btn-primary {
-            background: var(--p-black);
-            color: var(--p-white);
-            padding: 1rem 2rem;
-            border-radius: 1.2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-primary:active { transform: scale(0.95); }
-
-        .tab-bar {
+        /* فقاعات الخلفية المتحركة (الروح) */
+        .blob {
             position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: var(--p-white);
-            border-top: 1px solid rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            z-index: 999;
-            padding-bottom: calc(15px + env(safe-area-inset-bottom));
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(180deg, #4f46e5 0%, #7c3aed 100%);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.4;
+            animation: move 20s infinite alternate;
+        }
+        .blob-2 { background: #db2777; left: -200px; top: -200px; animation-delay: -5s; }
+        .blob-3 { background: #2563eb; right: -200px; bottom: -200px; animation-delay: -10s; }
+
+        @keyframes move {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(100px, 100px) scale(1.2); }
         }
 
-        /* لوحة التحكم */
-        .admin-panel {
-            background: #000;
-            color: #fff;
-            min-height: 100vh;
+        /* التصميم الزجاجي */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
         }
 
-        /* نظام الإشعارات */
-        .toast {
+        /* بطاقة المنتج الفائقة */
+        .product-card {
+            perspective: 1000px;
+        }
+        .inner-card {
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .product-card:hover .inner-card {
+            transform: rotateY(10deg) rotateX(5deg);
+        }
+
+        /* نصوص ضخمة شفافة */
+        .bg-text {
             position: fixed;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #000;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 50px;
-            z-index: 2000;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 20vw;
+            font-weight: 900;
+            color: rgba(255,255,255,0.02);
+            z-index: -2;
+            white-space: nowrap;
+            pointer-events: none;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* زر الشراء المشع */
+        .btn-glow {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            transition: 0.3s;
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 40px rgba(255,255,255,0.5);
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
+    <div class="blob"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="bg-text">INFINITY ELITE</div>
+
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo, useCallback } = React;
-
-        // --- محرك البيانات (Data Engine) ---
-        const INITIAL_PRODUCTS = [
-            { id: 1, name: "حقيبة ديور ليدي", price: 1250000, cat: "حقائب", img: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800", stock: 3, sale: true, oldPrice: 1500000 },
-            { id: 2, name: "ساعة رولكس صبمارينر", price: 24000000, cat: "ساعات", img: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800", stock: 1, sale: false },
-            { id: 3, name: "نظارة كارتييه بانثر", price: 1450000, cat: "إكسسوارات", img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800", stock: 5, sale: false },
-            { id: 4, name: "عطر كريد أيفينتوس", price: 650000, cat: "عطور", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800", stock: 12, sale: true, oldPrice: 800000 },
-            { id: 5, name: "حذاء فالنتينو كعب", price: 950000, cat: "أحذية", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800", stock: 4, sale: false },
-            { id: 6, name: "سوار تيفاني أند كو", price: 3200000, cat: "إكسسوارات", img: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800", stock: 2, sale: true, oldPrice: 4000000 }
-        ];
+        const { useState, useEffect } = React;
 
         const App = () => {
-            // --- State Management ---
-            const [products, setProducts] = useState(INITIAL_PRODUCTS);
+            const [activeTab, setActiveTab] = useState('shop');
             const [cart, setCart] = useState([]);
-            const [view, setView] = useState('home'); // home, shop, cart, admin, product-details
-            const [theme, setTheme] = useState('light');
-            const [searchQuery, setSearchQuery] = useState("");
-            const [selectedCategory, setSelectedCategory] = useState("الكل");
-            const [toast, setToast] = useState(null);
-            const [loading, setLoading] = useState(true);
+            
+            const products = [
+                { id: 1, name: "Luxury Watch", price: "2,500$", img: "https://images.unsplash.com/photo-1547996160-81dfa63595dd?w=800" },
+                { id: 2, name: "Premium Scent", price: "450$", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800" },
+                { id: 3, name: "Limited Edition Bag", price: "1,200$", img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800" },
+                { id: 4, name: "Designer Heels", price: "890$", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800" }
+            ];
 
-            // --- Effects ---
-            useEffect(() => {
-                setTimeout(() => setLoading(false), 2500);
-                if (window.lucide) lucide.createIcons();
-            }, [view, products]);
-
-            const showNotify = (msg) => {
-                setToast(msg);
-                setTimeout(() => setToast(null), 3000);
-            };
-
-            // --- Logic Functions ---
-            const filteredProducts = useMemo(() => {
-                return products.filter(p => {
-                    const matchCat = selectedCategory === "الكل" || p.cat === selectedCategory;
-                    const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-                    return matchCat && matchSearch;
-                });
-            }, [products, selectedCategory, searchQuery]);
-
-            const addToCart = useCallback((product) => {
-                setCart(prev => [...prev, { ...product, cartId: Date.now() }]);
-                showNotify(`تم إضافة ${product.name} للسلة`);
-            }, []);
-
-            const removeFromCart = (cartId) => {
-                setCart(prev => prev.filter(item => item.cartId !== cartId));
-            };
-
-            const cartTotal = cart.reduce((acc, item) => acc + item.price, 0);
-
-            // --- UI Components ---
-            const Header = () => (
-                <nav className="fixed top-0 w-full glass-header py-6 px-8 flex justify-between items-center border-b border-gray-100">
-                    <div className="text-3xl font-[900] tracking-tighter italic animate__animated animate__fadeIn">ELITE </div>
-                    <div className="hidden md:flex gap-10 font-bold text-[11px] uppercase tracking-[0.3em]">
-                        {["الكل", "حقائب", "ساعات", "عطور", "إكسسوارات"].map(c => (
-                            <span 
-                                key={c} 
-                                onClick={() => {setSelectedCategory(c); setView('shop')}}
-                                className={`cursor-pointer transition-all ${selectedCategory === c ? 'text-blue-600 border-b-2 border-blue-600' : 'opacity-40 hover:opacity-100'}`}
-                            >
-                                {c}
-                            </span>
-                        ))}
-                    </div>
-                    <div className="flex gap-6 items-center">
-                        <div className="relative cursor-pointer" onClick={() => setView('cart')}>
-                            <i data-lucide="shopping-bag" className="w-6 h-6"></i>
-                            {cart.length > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                                    {cart.length}
-                                </span>
-                            )}
-                        </div>
-                        <i 
-                            data-lucide="command" 
-                            className="w-6 h-6 cursor-pointer opacity-50" 
-                            onClick={() => setView('admin')}
-                        ></i>
-                    </div>
-                </nav>
-            );
-
-            const ProductCard = ({ p }) => (
-                <div className="luxury-card bg-[var(--p-card)] rounded-[2.5rem] p-4 group animate__animated animate__fadeInUp">
-                    <div className="image-container">
-                        <img src={p.img} className="product-img" loading="lazy" />
-                        <div className="absolute top-4 right-4 flex flex-col gap-2">
-                            {p.sale && <span className="bg-red-500 text-white text-[10px] px-3 py-1 rounded-full font-bold">SALE</span>}
-                            {p.stock < 3 && <span className="bg-orange-500 text-white text-[10px] px-3 py-1 rounded-full font-bold">قطع محدودة</span>}
-                        </div>
-                        <button 
-                            onClick={() => addToCart(p)}
-                            className="absolute bottom-6 left-1/2 -translate-x-1/2 w-4/5 bg-white text-black py-4 rounded-2xl font-black text-xs opacity-0 group-hover:opacity-100 transition-all shadow-2xl"
-                        >
-                            أضف للسلة +
-                        </button>
-                    </div>
-                    <div className="mt-6 px-2 pb-2">
-                        <div className="flex justify-between items-start mb-2">
-                            <h3 className="text-lg font-bold truncate w-2/3">{p.name}</h3>
-                            <div className="text-left">
-                                <p className="text-xl font-black text-black">{p.price.toLocaleString()} د.ع</p>
-                                {p.oldPrice && <p className="text-xs text-gray-400 line-through">{p.oldPrice.toLocaleString()} د.ع</p>}
-                            </div>
-                        </div>
-                        <p className="text-[10px] text-gray-400 uppercase tracking-widest">{p.cat}</p>
-                    </div>
-                </div>
-            );
-
-            // --- Render Logic ---
-            if (loading) return (
-                <div className="h-screen w-full bg-black flex flex-col items-center justify-center text-white">
-                    <div className="text-5xl font-black tracking-[0.5em] mb-8 animate__animated animate__fadeInDown">ELITE</div>
-                    <div className="w-64 h-1 bg-gray-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-white animate-progress" style={{width: '60%'}}></div>
-                    </div>
-                    <p className="mt-4 text-[10px] uppercase tracking-[0.5em] opacity-40">جارِ تحميل النظام الفاخر...</p>
-                </div>
-            );
+            useEffect(() => { if (window.lucide) lucide.createIcons(); }, [activeTab]);
 
             return (
-                <div className="min-h-screen">
-                    <Header />
-                    {toast && <div className="toast animate__animated animate__fadeInDown">{toast}</div>}
+                <div className="min-h-screen flex flex-col items-center p-6 pb-32">
+                    {/* Header */}
+                    <header className="w-full max-w-5xl flex justify-between items-center py-10">
+                        <h1 className="text-3xl font-black italic tracking-tighter">ELITE∞</h1>
+                        <div className="glass px-6 py-3 flex gap-8">
+                            <i data-lucide="search" className="w-5 h-5 opacity-50"></i>
+                            <div onClick={() => setActiveTab('cart')} className="relative cursor-pointer">
+                                <i data-lucide="shopping-bag" className="w-5 h-5"></i>
+                                {cart.length > 0 && <span className="absolute -top-2 -right-2 bg-white text-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{cart.length}</span>}
+                            </div>
+                        </div>
+                    </header>
 
-                    <main className="pt-32 pb-40 px-6 max-w-7xl mx-auto">
-                        
-                        {view === 'home' && (
-                            <section className="space-y-20">
-                                {/* Hero Section */}
-                                <div className="relative h-[70vh] rounded-[4rem] overflow-hidden group">
-                                    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[3s]" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-20 text-white">
-                                        <h2 className="text-7xl font-black leading-none mb-6 animate__animated animate__fadeInLeft">أناقتك، <br/> بصمتنا الخاصة.</h2>
-                                        <p className="max-w-md text-lg opacity-70 mb-10 animate__animated animate__fadeInLeft" style={{animationDelay: '0.2s'}}>اكتشفي أرقى المجموعات العالمية المختارة بعناية لتناسب ذوقك الرفيع.</p>
-                                        <button onClick={() => setView('shop')} className="btn-primary w-fit px-12 animate__animated animate__fadeInUp">ابدأي التسوق الآن</button>
+                    {activeTab === 'shop' && (
+                        <div className="w-full max-w-6xl">
+                            {/* Hero Text */}
+                            <div className="text-center my-20">
+                                <h2 className="text-7xl font-black mb-4 leading-none">مُستقبل <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">الأناقة الراقية</span></h2>
+                                <p className="opacity-40 tracking-widest uppercase text-xs">Collection 2026 • Limited Edition</p>
+                            </div>
+
+                            {/* Products Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                {products.map(p => (
+                                    <div key={p.id} className="product-card">
+                                        <div className="inner-card glass p-4 h-full">
+                                            <div className="rounded-[20px] overflow-hidden h-[400px] relative">
+                                                <img src={p.img} className="w-full h-full object-cover" />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8">
+                                                    <h3 className="text-3xl font-bold mb-2">{p.name}</h3>
+                                                    <p className="text-xl font-light mb-6 opacity-80">{p.price}</p>
+                                                    <button 
+                                                        onClick={() => setCart([...cart, p])}
+                                                        className="btn-glow w-full py-5 rounded-2xl font-black uppercase text-xs"
+                                                    >
+                                                        امتلاك القطعة الآن
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
-                                {/* Categories Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    {["حقائب", "ساعات", "إكسسوارات"].map((c, i) => (
-                                        <div key={i} onClick={() => {setSelectedCategory(c); setView('shop')}} className="relative h-64 rounded-[3rem] overflow-hidden cursor-pointer group">
-                                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all"></div>
-                                            <h4 className="absolute inset-0 flex items-center justify-center text-white text-3xl font-black italic">{c}</h4>
-                                            <img src={`https://source.unsplash.com/featured/?${c}`} className="w-full h-full object-cover" />
+                    {activeTab === 'cart' && (
+                        <div className="w-full max-w-2xl glass p-10 mt-10 animate-pulse-slow">
+                            <h2 className="text-4xl font-black mb-10 italic">حقيبة النخبة.</h2>
+                            {cart.length === 0 ? <p className="opacity-30">الحقيبة تنتظر اختياراتك...</p> : (
+                                <div className="space-y-6">
+                                    {cart.map((item, i) => (
+                                        <div key={i} className="flex justify-between items-center border-b border-white/10 pb-6">
+                                            <div className="flex gap-4 items-center">
+                                                <img src={item.img} className="w-16 h-16 rounded-xl object-cover" />
+                                                <span className="font-bold">{item.name}</span>
+                                            </div>
+                                            <button onClick={() => setCart(cart.filter((_, idx) => idx !== i))} className="text-red-500">حذف</button>
                                         </div>
                                     ))}
+                                    <button className="w-full btn-glow py-6 rounded-3xl font-black text-xl mt-10">إتمام الطلب الملكي</button>
                                 </div>
-                            </section>
-                        )}
-
-                        {view === 'shop' && (
-                            <section className="animate__animated animate__fadeIn">
-                                <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8">
-                                    <h2 className="text-5xl font-black italic">SHOP.</h2>
-                                    <div className="relative w-full md:w-96">
-                                        <input 
-                                            type="text" 
-                                            placeholder="ابحث عن قطعة فريدة..." 
-                                            className="w-full py-4 px-8 rounded-full bg-gray-50 border-none outline-none focus:ring-2 ring-black/5"
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-                                    {filteredProducts.map(p => <ProductCard key={p.id} p={p} />)}
-                                </div>
-                            </section>
-                        )}
-
-                        {view === 'cart' && (
-                            <section className="max-w-3xl mx-auto py-10 animate__animated animate__fadeIn">
-                                <h2 className="text-5xl font-black mb-16 text-center italic tracking-tighter">حقيبة التسوق.</h2>
-                                {cart.length === 0 ? (
-                                    <div className="text-center py-40 border-y border-gray-100 opacity-30">لا توجد قطع في حقيبتك بعد</div>
-                                ) : (
-                                    <div className="space-y-8">
-                                        {cart.map((item, i) => (
-                                            <div key={i} className="flex gap-8 items-center bg-gray-50 p-8 rounded-[3rem] group">
-                                                <img src={item.img} className="w-32 h-40 object-cover rounded-[2rem] shadow-xl" />
-                                                <div className="flex-grow">
-                                                    <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-2">{item.cat}</p>
-                                                    <h4 className="text-xl font-bold mb-1">{item.name}</h4>
-                                                    <p className="text-2xl font-black">{item.price.toLocaleString()} د.ع</p>
-                                                </div>
-                                                <button onClick={() => removeFromCart(item.cartId)} className="text-red-400 hover:text-red-600 transition p-4">
-                                                    <i data-lucide="trash-2"></i>
-                                                </button>
-                                            </div>
-                                        ))}
-                                        <div className="mt-20 p-10 bg-black rounded-[4rem] text-white flex flex-col items-center">
-                                            <span className="text-xs uppercase tracking-[0.5em] opacity-50 mb-4">إجمالي المبلغ</span>
-                                            <h3 className="text-5xl font-[900] mb-12">{cartTotal.toLocaleString()} د.ع</h3>
-                                            <button 
-                                                onClick={() => window.open(`https://wa.me/964XXXXXXXX?text=طلب_جديد`)}
-                                                className="w-full bg-white text-black py-6 rounded-3xl font-black text-lg hover:scale-105 transition active:scale-95"
-                                            >
-                                                تأكيد الطلب (واتساب)
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </section>
-                        )}
-
-                        {view === 'admin' && (
-                            <section className="admin-panel fixed inset-0 z-[2000] p-10 overflow-y-auto animate__animated animate__slideInUp">
-                                <div className="max-w-6xl mx-auto">
-                                    <div className="flex justify-between items-center mb-20">
-                                        <h2 className="text-6xl font-black italic tracking-tighter uppercase">Titan Console.</h2>
-                                        <button onClick={() => setView('home')} className="text-4xl">&times;</button>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-20">
-                                        {[
-                                            { l: "المنتجات", v: products.length, i: "package" },
-                                            { l: "إجمالي المخزون", v: products.reduce((a,b)=>a+b.stock, 0), i: "layers" },
-                                            { l: "السلة الحالية", v: cart.length, i: "shopping-cart" },
-                                            { l: "حالة السيرفر", v: "LIVE", i: "activity" }
-                                        ].map((stat, i) => (
-                                            <div key={i} className="bg-white/5 p-8 rounded-[2rem] border border-white/10 hover:border-white/30 transition">
-                                                <i data-lucide={stat.i} className="mb-4 opacity-50"></i>
-                                                <p className="text-[10px] uppercase opacity-40 mb-1">{stat.l}</p>
-                                                <h4 className="text-3xl font-bold">{stat.v}</h4>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="bg-white/5 p-12 rounded-[4rem] border border-white/10">
-                                        <h3 className="text-2xl font-bold mb-10 flex items-center gap-4"><i data-lucide="plus-circle"></i> إضافة منتج جديد للنظام</h3>
-                                        <form className="grid grid-cols-1 md:grid-cols-2 gap-8" onSubmit={(e) => {
-                                            e.preventDefault();
-                                            const f = new FormData(e.target);
-                                            const nP = {
-                                                id: Date.now(),
-                                                name: f.get('n'),
-                                                price: Number(f.get('p')),
-                                                cat: f.get('c'),
-                                                img: f.get('i'),
-                                                stock: 5,
-                                                sale: false
-                                            };
-                                            setProducts([nP, ...products]);
-                                            e.target.reset();
-                                            showNotify("تم إضافة المنتج بنجاح");
-                                        }}>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] uppercase opacity-40 px-2">اسم المنتج</label>
-                                                <input name="n" placeholder="Product Name" className="bg-transparent border-b border-white/20 w-full p-4 outline-none focus:border-white transition" required />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] uppercase opacity-40 px-2">السعر (د.ع)</label>
-                                                <input name="p" type="number" placeholder="0.00" className="bg-transparent border-b border-white/20 w-full p-4 outline-none focus:border-white transition" required />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] uppercase opacity-40 px-2">رابط الصورة (URL)</label>
-                                                <input name="i" placeholder="https://..." className="bg-transparent border-b border-white/20 w-full p-4 outline-none focus:border-white transition" required />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] uppercase opacity-40 px-2">الفئة</label>
-                                                <select name="c" className="bg-transparent border-b border-white/20 w-full p-4 outline-none appearance-none">
-                                                    <option className="bg-black">حقائب</option>
-                                                    <option className="bg-black">ساعات</option>
-                                                    <option className="bg-black">عطور</option>
-                                                    <option className="bg-black">إكسسوارات</option>
-                                                </select>
-                                            </div>
-                                            <button className="md:col-span-2 bg-white text-black py-6 rounded-3xl font-black text-sm uppercase tracking-widest hover:bg-gray-200 transition">تحديث المخزون الآن</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </section>
-                        )}
-                    </main>
-
-                    {/* Navigation Tab Bar (Mobile) */}
-                    <div className="tab-bar">
-                        <div onClick={() => setView('home')} className={`flex flex-col items-center gap-1 ${view === 'home' ? 'text-black scale-110' : 'opacity-20'}`}>
-                            <i data-lucide="home" className="w-5 h-5"></i>
-                            <span className="text-[8px] font-black uppercase tracking-tighter">Home</span>
+                            )}
+                            <button onClick={() => setActiveTab('shop')} className="w-full mt-6 text-xs opacity-30 uppercase tracking-widest">العودة للمعرض</button>
                         </div>
-                        <div onClick={() => setView('shop')} className={`flex flex-col items-center gap-1 ${view === 'shop' ? 'text-black scale-110' : 'opacity-20'}`}>
-                            <i data-lucide="search" className="w-5 h-5"></i>
-                            <span className="text-[8px] font-black uppercase tracking-tighter">Explore</span>
-                        </div>
-                        <div onClick={() => setView('cart')} className={`flex flex-col items-center gap-1 ${view === 'cart' ? 'text-black scale-110' : 'opacity-20'}`}>
-                            <i data-lucide="shopping-bag" className="w-5 h-5"></i>
-                            <span className="text-[8px] font-black uppercase tracking-tighter">Bag</span>
-                        </div>
-                        <div onClick={() => setView('admin')} className={`flex flex-col items-center gap-1 ${view === 'admin' ? 'text-black scale-110' : 'opacity-20'}`}>
-                            <i data-lucide="shield-check" className="w-5 h-5"></i>
-                            <span className="text-[8px] font-black uppercase tracking-tighter">Admin</span>
-                        </div>
-                    </div>
+                    )}
 
-                    <footer className="py-20 text-center opacity-10 text-[10px] uppercase tracking-[1em] mb-20 font-black">Elite Titan Engine v4.0</footer>
+                    {/* Navigation Bar */}
+                    <nav className="fixed bottom-8 w-[90%] max-w-md glass py-5 px-10 flex justify-around items-center">
+                        <i data-lucide="home" onClick={() => setActiveTab('shop')} className={`cursor-pointer ${activeTab === 'shop' ? 'text-white' : 'opacity-30'}`}></i>
+                        <i data-lucide="layout-grid" className="opacity-30"></i>
+                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center -mt-16 shadow-2xl">
+                             <i data-lucide="zap" className="text-black"></i>
+                        </div>
+                        <i data-lucide="heart" className="opacity-30"></i>
+                        <i data-lucide="user" className="opacity-30"></i>
+                    </nav>
                 </div>
             );
         };
