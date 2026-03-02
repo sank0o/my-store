@@ -3,260 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ELITE | Luxury Experience</title>
+    <title>ELITE ULTIMATE | النظام المتكامل</title>
     
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    
+
     <style>
-        :root { --p-color: #000; --s-color: #fff; --gray: #fdfdfd; }
-        * { -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Cairo', sans-serif; background-color: var(--s-color); overflow-x: hidden; color: #1a1a1a; }
+        :root { --accent: #000; --bg: #ffffff; --card: #f8f8f8; }
+        [data-theme='dark'] { --accent: #fff; --bg: #0a0a0a; --card: #151515; }
         
-        /* تحسينات المظهر */
-        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .hero-gradient { background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%); }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--accent); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        /* تأثيرات الفخامة */
-        .luxury-shadow { box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03); }
-        .product-card { border-radius: 2rem; overflow: hidden; background: #fff; border: 1px solid #eee; transition: all 0.4s ease; }
-        .product-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .product-image { transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .product-card:hover .product-image { transform: scale(1.05); }
+        /* تأثيرات الفخامة القصوى */
+        .luxury-card { position: relative; border-radius: 2.5rem; transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1); overflow: hidden; }
+        .luxury-card:hover { transform: translateY(-15px) scale(1.02); }
+        .image-zoom { transition: 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .luxury-card:hover .image-zoom { transform: scale(1.15); }
+        
+        /* أنظمة الإضاءة */
+        .neon-border { border: 1px solid rgba(128, 128, 128, 0.1); }
+        .shimmer { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); background-size: 200% 100%; animation: shimmer 2s infinite; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         
         /* تحسينات الموبايل */
-        @media (max-width: 768px) {
-            .mobile-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .mobile-nav { height: 70px; }
-            .safe-area-pb { padding-bottom: env(safe-area-inset-bottom); }
-        }
-        
-        /* تأثيرات الحيوية */
-        .story-ring { border: 2px solid #ff4d4d; padding: 2px; border-radius: 50%; width: 70px; height: 70px; object-fit: cover; }
-        .live-notif { position: fixed; bottom: 80px; right: 20px; background: white; padding: 10px 20px; border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 100; display: flex; items-center: center; gap: 10px; border: 1px solid #eee; }
-        .badge-new { background: #000; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 4px; }
-        .discount-badge { background: #ef4444; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 4px; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #000; }
-        input, textarea { border: 1px solid #eee; padding: 12px; border-radius: 15px; outline: none; width: 100%; transition: 0.3s; }
-        input:focus { border-color: #000; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
-        .btn-luxury:hover { background: #333; letter-spacing: 1px; }
+        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(var(--bg), 0.8); backdrop-filter: blur(20px); z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
-<body class="safe-area-pb">
+<body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useMemo } = React;
 
+        // --- محرك النظام الأساسي ---
         const App = () => {
-            const [view, setView] = useState('shop'); // shop, cart
-            const [cart, setCart] = useState([]);
-            const [isAdmin, setIsAdmin] = useState(false);
-            const [showAddModal, setShowAddModal] = useState(false);
-            const [showNotif, setShowNotif] = useState(false);
-            const [lastBuyer, setLastBuyer] = useState("");
-
-            // المنتجات المحدثة
+            const [isLoaded, setIsLoaded] = useState(false);
+            const [theme, setTheme] = useState('light');
+            const [view, setView] = useState('home'); 
             const [products, setProducts] = useState([
-                { 
-                    id: 1, name: "ساعة رويال أواك كلاسيك", price: 450000, oldPrice: 600000, 
-                    img: "https://images.unsplash.com/photo-1547996160-81dfa63595dd?w=800", 
-                    category: "ساعات", tag: "جديد", 
-                    desc: "إصدار محدود من الفولاذ المقاوم للصدأ بتصميم أنيق." 
-                },
-                { 
-                    id: 2, name: "عطر ليجند نوار", price: 89000, oldPrice: 110000, 
-                    img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800", 
-                    category: "إكسسوارات", tag: "خصم", 
-                    desc: "رائحة خشبية فريدة تعكس الثقة والتميز." 
-                },
-                { 
-                    id: 3, name: "حقيبة يد جلدية فاخرة", price: 320000, oldPrice: null, 
-                    img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800", 
-                    category: "إكسسوارات", tag: "الأكثر مبيعاً", 
-                    desc: "صناعة يدوية من أجود أنواع الجلود الإيطالية." 
-                },
-                { 
-                    id: 4, name: "فستان سهرة ملكي", price: 550000, oldPrice: 750000, 
-                    img: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500", 
-                    category: "ملابس", tag: "تخفيضات", 
-                    desc: "تصميم راقٍ يبرز جمالك في المناسبات الخاصة." 
-                }
+                { id: 1, name: "ساعة أوديمار بيجيه", price: 1250000, cat: "ساعات", img: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800", stock: 5, likes: 124, tag: "Exclusive" },
+                { id: 2, name: "حقيبة هيرميس كايلي", price: 850000, cat: "حقائب", img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800", stock: 2, likes: 89, tag: "New" },
+                { id: 3, name: "عطر روجا دوف", price: 145000, cat: "عطور", img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800", stock: 15, likes: 210, tag: "Best Seller" },
+                { id: 4, name: "نظارة لويس فيتون", price: 65000, cat: "إكسسوارات", img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800", stock: 8, likes: 45, tag: "Trend" }
             ]);
+            const [cart, setCart] = useState([]);
+            const [wishlist, setWishlist] = useState([]);
+            const [searchQuery, setSearchQuery] = useState("");
+            const [activeCat, setActiveCat] = useState("الكل");
+            const [isAdmin, setIsAdmin] = useState(false);
 
-            const buyers = ["سارة من بغداد", "أحمد من البصرة", "مريم من أربيل", "علي من النجف"];
-
+            // إعدادات النظام عند التشغيل
             useEffect(() => {
+                document.documentElement.setAttribute('data-theme', theme);
+                setTimeout(() => setIsLoaded(true), 2000);
                 if (window.lucide) lucide.createIcons();
-                const interval = setInterval(() => {
-                    setLastBuyer(buyers[Math.floor(Math.random() * buyers.length)]);
-                    setShowNotif(true);
-                    setTimeout(() => setShowNotif(false), 5000);
-                }, 15000);
-                return () => clearInterval(interval);
-            }, [view, products, isAdmin]);
+            }, [theme, view, products]);
 
-            const addToCart = (product) => {
-                setCart([...cart, { ...product, cartId: Date.now() }]);
-                alert("تمت إضافة القطعة إلى حقيبتك");
+            // محرك البحث والفلاتر الذكي
+            const filteredProducts = useMemo(() => {
+                return products.filter(p => {
+                    const matchSearch = p.name.includes(searchQuery);
+                    const matchCat = activeCat === "الكل" || p.cat === activeCat;
+                    return matchSearch && matchCat;
+                });
+            }, [searchQuery, activeCat, products]);
+
+            // وظائف السلة والمفضلة
+            const toggleWishlist = (id) => {
+                setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
             };
 
-            const removeFromCart = (id) => {
-                setCart(cart.filter(item => item.cartId !== id));
+            const addToCart = (p) => {
+                setCart([...cart, { ...p, cartId: Date.now() }]);
             };
 
-            const totalPrice = cart.reduce((sum, item) => sum + Number(item.price), 0);
+            const totalAmount = cart.reduce((s, i) => s + i.price, 0);
 
-            const sendWhatsApp = () => {
-                const message = `طلب جديد من متجر ELITE:\n` + 
-                                cart.map(i => `- ${i.name} (${i.price.toLocaleString()} د.ع)`).join('\n') + 
-                                `\nإجمالي المبلغ: ${totalPrice.toLocaleString()} د.ع`;
-                window.open(`https://wa.me/رقمك_هنا?text=${encodeURIComponent(message)}`);
-            };
+            // مكونات الواجهة (Sub-Components)
+            const ProductCard = ({ p }) => (
+                <div className="luxury-card neon-border group animate__animated animate__fadeInUp bg-[var(--card)]">
+                    <div className="relative aspect-[4/5] overflow-hidden">
+                        <img src={p.img} className="image-zoom w-full h-full object-cover" loading="lazy" />
+                        <div className="absolute top-5 right-5 flex flex-col gap-3">
+                            <button onClick={(e) => {e.stopPropagation(); toggleWishlist(p.id)}} className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center transition hover:bg-red-500">
+                                <i data-lucide="heart" className={`w-5 h-5 ${wishlist.includes(p.id) ? 'fill-white stroke-white' : 'stroke-white'}`}></i>
+                            </button>
+                        </div>
+                        {p.tag && <div className="absolute bottom-5 left-5 bg-black text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest">{p.tag}</div>}
+                    </div>
+                    <div className="p-8">
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                                <p className="text-[10px] text-gray-500 uppercase tracking-[0.3em] mb-1">{p.cat}</p>
+                                <h3 className="text-xl font-bold">{p.name}</h3>
+                            </div>
+                            <span className="text-xl font-black">{p.price.toLocaleString()} د.ع</span>
+                        </div>
+                        <button onClick={() => addToCart(p)} className="w-full bg-[var(--accent)] text-[var(--bg)] py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition hover:opacity-80 active:scale-95">
+                            إضافة للحقيبة
+                        </button>
+                    </div>
+                </div>
+            );
 
-            const submitNewProduct = (e) => {
-                e.preventDefault();
-                const f = new FormData(e.target);
-                const newP = {
-                    id: Date.now(),
-                    name: f.get('n'),
-                    price: f.get('p'),
-                    img: f.get('i'),
-                    desc: f.get('d'),
-                    category: "وصل حديثاً",
-                    tag: "جديد"
-                };
-                setProducts([newP, ...products]);
-                setShowAddModal(false);
-            };
+            if (!isLoaded) return (
+                <div className="h-screen w-full flex flex-col items-center justify-center bg-black text-white">
+                    <h1 className="text-4xl font-black tracking-[0.5em] mb-4 animate__animated animate__pulse animate__infinite">ELITE</h1>
+                    <div className="w-48 h-[2px] bg-white/10 relative overflow-hidden">
+                        <div className="shimmer absolute inset-0 w-full h-full"></div>
+                    </div>
+                </div>
+            );
 
             return (
-                <div className="relative">
-                    {/* Live Notification */}
-                    {showNotif && (
-                        <div className="live-notif animate__animated animate__fadeInUp">
-                            <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-                            <p className="text-[11px] font-bold text-gray-700 uppercase">اشترى {lastBuyer} منتجاً الآن!</p>
-                        </div>
-                    )}
-
-                    {/* Navigation */}
-                    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 px-6 py-4 glass-nav flex justify-between items-center ${isNavScrolled ? 'shadow-sm' : ''}`}>
-                        <h1 className="text-2xl font-black tracking-tighter cursor-pointer animate__animated animate__pulse animate__infinite" onClick={() => setView('shop')}>ELITE.</h1>
-                        <div className="flex gap-6 items-center">
-                            <button onClick={() => setIsAdmin(!isAdmin)} className="text-[10px] font-bold bg-black text-white px-3 py-1 rounded-full uppercase">
-                                {isAdmin ? 'Logout Admin' : 'Admin Access'}
-                            </button>
-                            <div className="cursor-pointer relative" onClick={() => setView('cart')}>
-                                <i data-lucide="shopping-bag"></i>
-                                {cart.length > 0 && <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{cart.length}</span>}
+                <div className="min-h-screen">
+                    {/* Header المتقدم */}
+                    <nav className="fixed top-0 w-full z-[100] px-8 py-6 flex justify-between items-center glass-nav">
+                        <div className="flex items-center gap-8">
+                            <h1 className="text-2xl font-black tracking-tighter cursor-pointer" onClick={() => setView('home')}>ELITE.</h1>
+                            <div className="hidden md:flex gap-6 text-[10px] font-bold uppercase tracking-widest">
+                                {['الكل', 'ساعات', 'حقائب', 'عطور'].map(c => (
+                                    <span key={c} onClick={() => {setActiveCat(c); setView('home')}} className={`cursor-pointer ${activeCat === c ? 'border-b-2 border-black' : 'opacity-40'}`}>{c}</span>
+                                ))}
                             </div>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            <i data-lucide={theme === 'light' ? 'moon' : 'sun'} className="cursor-pointer w-5 h-5" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}></i>
+                            <div className="relative cursor-pointer" onClick={() => setView('cart')}>
+                                <i data-lucide="shopping-bag" className="w-5 h-5"></i>
+                                {cart.length > 0 && <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center">{cart.length}</span>}
+                            </div>
+                            <button onClick={() => setIsAdmin(!isAdmin)} className="bg-black text-white text-[8px] px-3 py-1 rounded-full uppercase font-bold">Panel</button>
                         </div>
                     </nav>
 
-                    {view === 'shop' && (
-                        <div>
-                            {/* Hero */}
-                            <div className="relative h-[60vh] bg-black flex items-center justify-center overflow-hidden">
-                                <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1600" className="absolute w-full h-full object-cover opacity-60 shadow-inner" />
-                                <div className="hero-gradient absolute inset-0"></div>
-                                <h2 className="relative z-10 text-6xl md:text-8xl font-black italic text-white tracking-tighter">ELITE.</h2>
-                            </div>
-
-                            {/* Admin Bar */}
-                            {user === 'admin' && (
-                                <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-20">
-                                    <button onClick={() => setShowAddModal(true)} className="bg-white text-black px-10 py-5 rounded-full font-black shadow-2xl flex items-center gap-3 border border-black/5 hover:scale-105 transition-transform">
-                                        <i data-lucide="plus"></i> إضافة منتج جديد
-                                    </button>
+                    <main className="pt-24 pb-32 px-6 max-w-[1600px] mx-auto">
+                        
+                        {view === 'home' && (
+                            <section>
+                                {/* محرك البحث الفخم */}
+                                <div className="py-12 flex flex-col items-center">
+                                    <input 
+                                        type="text" 
+                                        placeholder="ما الذي تبحث عنه اليوم؟" 
+                                        className="w-full max-w-2xl bg-[var(--card)] text-center text-2xl font-light py-8 rounded-[3rem] outline-none border-none luxury-shadow"
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
                                 </div>
-                            )}
 
-                            {/* Content */}
-                            <main className="max-w-7xl mx-auto py-20 px-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 product-grid">
-                                    {products.map((p, idx) => (
-                                        <div key={p.id} className="product-card group cursor-pointer relative animate__animated animate__fadeInUp" style={{animationDelay: `${idx * 0.1}s`}}>
-                                            {user === 'admin' && (
-                                                <button onClick={(e) => {e.stopPropagation(); setProducts(products.filter(x => x.id !== p.id))}} className="absolute top-4 left-4 z-20 bg-white text-red-500 p-3 rounded-full shadow-xl hover:bg-red-500 hover:text-white transition-all">
-                                                    <i data-lucide="trash-2" className="w-4 h-4"></i>
-                                                </button>
-                                            )}
-                                            <div className="aspect-[4/5] overflow-hidden rounded-[3rem] bg-gray-100 mb-6 relative border border-black/5">
-                                                <img src={p.img} className="product-image w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" onError={(e) => e.target.src='https://via.placeholder.com/800x1000?text=رابط+الصورة+غير+صحيح'} />
-                                                <div className="absolute top-3 left-3 bg-white/90 text-[9px] px-2 py-1 rounded-full font-bold shadow-sm">{p.tag}</div>
-                                            </div>
-                                            <div className="px-4 p-6">
-                                                <div className="flex justify-between items-start mb-2 font-bold">
-                                                    <div><h4 className="text-xl">{p.name}</h4><p className="text-gray-400 text-[10px] uppercase tracking-widest">{p.category}</p></div>
-                                                    <div className="text-right">
-                                                        <span className="text-2xl font-black text-blue-600">{p.price.toLocaleString()} د.ع</span>
-                                                        {p.oldPrice && <p className="text-xs text-gray-400 line-through">{p.oldPrice.toLocaleString()} د.ع</p>}
+                                {/* شبكة المنتجات */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                                    {filteredProducts.map(p => <ProductCard key={p.id} p={p} />)}
+                                </div>
+                            </section>
+                        )}
+
+                        {view === 'cart' && (
+                            <div className="max-w-4xl mx-auto py-20 animate__animated animate__fadeIn">
+                                <h2 className="text-6xl font-black mb-16 italic tracking-tighter text-center">Checkout.</h2>
+                                {cart.length === 0 ? (
+                                    <div className="text-center py-20 opacity-30">الحقيبة فارغة تماماً</div>
+                                ) : (
+                                    <div className="space-y-6">
+                                        {cart.map((item, i) => (
+                                            <div key={i} className="flex items-center justify-between p-8 bg-[var(--card)] rounded-[2.5rem] luxury-shadow">
+                                                <div className="flex items-center gap-6">
+                                                    <img src={item.img} className="w-24 h-24 rounded-3xl object-cover" />
+                                                    <div>
+                                                        <h4 className="text-xl font-bold">{item.name}</h4>
+                                                        <p className="text-sm opacity-50">{item.price.toLocaleString()} د.ع</p>
                                                     </div>
                                                 </div>
-                                                <p className="text-gray-500 text-sm leading-relaxed mb-6">{p.desc}</p>
-                                                <button onClick={() => addToCart(p)} className="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold hover:bg-black transition-colors active:scale-95 btn-active">أضف للحقيبة +</button>
+                                                <button onClick={() => setCart(cart.filter(x => x.cartId !== item.cartId))} className="w-12 h-12 flex items-center justify-center rounded-full bg-red-50 text-red-500"><i data-lucide="trash-2"></i></button>
                                             </div>
+                                        ))}
+                                        <div className="mt-20 p-10 border-t flex flex-col items-center">
+                                            <p className="text-sm opacity-40 uppercase tracking-[0.5em] mb-4">Total Amount</p>
+                                            <h3 className="text-5xl font-black mb-10">{totalAmount.toLocaleString()} د.ع</h3>
+                                            <button onClick={() => window.open(`https://wa.me/رقمك?text=طلب_جديد`)} className="w-full max-w-md bg-black text-white py-6 rounded-full font-black tracking-widest text-lg animate-pulse">تأكيد الطلب عبر واتساب</button>
                                         </div>
-                                    ))}
-                                </div>
-                            </main>
-                        </div>
-                    )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
-                    {view === 'cart' && (
-                        <div className="pt-32 max-w-2xl mx-auto px-6 pb-20 text-center animate__animated animate__fadeIn">
-                            <h2 className="text-4xl font-black mb-10 italic">MY CART.</h2>
-                            {cart.length === 0 ? <p className="text-gray-400 py-20 border-t border-b">السلة فارغة</p> : (
-                                <div className="space-y-4">
-                                    {cart.map((item, i) => (
-                                        <div key={i} className="flex justify-between items-center bg-gray-50 p-6 rounded-[2.5rem] animate__animated animate__slideInRight">
-                                            <div className="flex items-center gap-4 text-right">
-                                                <img src={item.img} className="w-16 h-16 rounded-2xl object-cover" />
-                                                <div>
-                                                    <p className="font-bold">{item.name}</p>
-                                                    <p className="text-xs text-blue-600 font-bold">{item.price.toLocaleString()} د.ع</p>
-                                                </div>
-                                            </div>
-                                            <button onClick={() => removeFromCart(item.cartId)} className="text-red-400 text-xs p-2">إزالة</button>
-                                        </div>
-                                    ))}
-                                    <div className="pt-10 border-t flex justify-between items-end">
-                                        <div>
-                                            <p className="text-xs text-gray-400 uppercase tracking-[0.3em] mb-2">Total Price</p>
-                                            <span className="text-3xl font-light">{totalPrice.toLocaleString()} د.ع</span>
-                                        </div>
-                                        <button onClick={sendWhatsApp} className="w-full bg-green-500 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-green-100 flex items-center justify-center gap-2 active:scale-95 transition btn-active">تأكيد الطلب عبر واتساب 💬</button>
+                        {isAdmin && (
+                            <div className="fixed inset-0 z-[200] bg-black/95 text-white p-10 overflow-y-auto">
+                                <button onClick={() => setIsAdmin(false)} className="absolute top-10 right-10 text-4xl font-thin">&times;</button>
+                                <h2 className="text-4xl font-black mb-12 uppercase tracking-tighter italic">Dashboard Control.</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+                                    <div className="p-10 border border-white/10 rounded-3xl">
+                                        <p className="text-xs opacity-50 uppercase mb-2">إجمالي المنتجات</p>
+                                        <h4 className="text-4xl font-black">{products.length}</h4>
+                                    </div>
+                                    <div className="p-10 border border-white/10 rounded-3xl">
+                                        <p className="text-xs opacity-50 uppercase mb-2">المخزون الكلي</p>
+                                        <h4 className="text-4xl font-black">{products.reduce((a,b)=>a+b.stock, 0)}</h4>
+                                    </div>
+                                    <div className="p-10 border border-white/10 rounded-3xl text-green-400">
+                                        <p className="text-xs opacity-50 uppercase mb-2">حالة النظام</p>
+                                        <h4 className="text-4xl font-black italic uppercase">Live</h4>
                                     </div>
                                 </div>
-                            )}
-                            <button onClick={() => setView('shop')} className="w-full mt-5 text-gray-400 text-sm">العودة للتسوق</button>
-                        </div>
-                    )}
+                                <div className="bg-white/5 p-10 rounded-[3rem]">
+                                    <h3 className="text-2xl font-bold mb-8">إضافة منتج جديد</h3>
+                                    <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => {
+                                        e.preventDefault();
+                                        const f = new FormData(e.target);
+                                        const nP = { id: Date.now(), name: f.get('n'), price: Number(f.get('p')), cat: f.get('c'), img: f.get('i'), stock: 5, tag: "New" };
+                                        setProducts([nP, ...products]);
+                                        e.target.reset();
+                                        alert("تم التحديث بنجاح");
+                                    }}>
+                                        <input name="n" placeholder="اسم المنتج الفاخر" className="bg-transparent border-b border-white/20 p-4 outline-none" required />
+                                        <input name="p" placeholder="السعر" type="number" className="bg-transparent border-b border-white/20 p-4 outline-none" required />
+                                        <input name="i" placeholder="رابط الصورة HQ" className="bg-transparent border-b border-white/20 p-4 outline-none" required />
+                                        <select name="c" className="bg-transparent border-b border-white/20 p-4 outline-none">
+                                            <option value="ساعات">ساعات</option>
+                                            <option value="حقائب">حقائب</option>
+                                            <option value="عطور">عطور</option>
+                                        </select>
+                                        <button className="md:col-span-2 bg-white text-black py-6 rounded-2xl font-black text-xs uppercase tracking-[0.5em] mt-8 hover:bg-gray-200">نشر في النظام</button>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
+                    </main>
 
-                    {showAddModal && (
-                        <div className="fixed inset-0 z-[200] modal-bg flex items-center justify-center p-4 backdrop-blur-sm animate__animated animate__fadeIn">
-                            <form onSubmit={submitNewProduct} className="bg-white p-8 rounded-[2.5rem] w-full max-w-lg shadow-2xl space-y-4 animate__animated animate__fadeInUp">
-                                <h2 className="text-2xl font-black mb-6">إضافة قطعة جديدة</h2>
-                                <input name="n" placeholder="اسم المنتج" required />
-                                <input name="p" type="number" placeholder="السعر" required />
-                                <input name="i" placeholder="رابط الصورة المباشر" required />
-                                <textarea name="d" placeholder="وصف قصير" rows="3"></textarea>
-                                <button className="w-full bg-black text-white py-4 rounded-2xl font-black shadow-lg hover:bg-black active:scale-95 transition-all duration-300 btn-luxury">حفظ ونشر</button>
-                                <button type="button" onClick={() => setShowAddModal(false)} className="w-full text-xs text-gray-400 mt-2">إلغاء</button>
-                            </form>
-                        </div>
-                    )}
+                    {/* Tab Bar للجوال */}
+                    <div className="tab-bar md:hidden flex justify-around py-5 luxury-shadow">
+                        <button onClick={() => setView('home')} className={view === 'home' ? 'text-black' : 'opacity-30'}><i data-lucide="home"></i></button>
+                        <button onClick={() => setView('home')} className="opacity-30"><i data-lucide="search"></i></button>
+                        <button onClick={() => setView('cart')} className={view === 'cart' ? 'text-black' : 'opacity-30'}><i data-lucide="shopping-cart"></i></button>
+                        <button onClick={() => setIsAdmin(true)} className="opacity-30"><i data-lucide="user"></i></button>
+                    </div>
 
-                    <footer className="py-20 border-t text-center text-[10px] text-gray-400 uppercase tracking-[0.5em] safe-area-pb">Elite Store © 2026 | Pure Minimalist Luxury</footer>
+                    <footer className="py-20 text-center border-t border-gray-50 opacity-20 text-[10px] uppercase tracking-[1em]">Elite Ultimate Store Engine</footer>
                 </div>
             );
         };
