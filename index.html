@@ -2,52 +2,132 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Elite Store</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Store | متجر النخبة</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #f9fafb; }
+        .product-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .product-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body>
     <div id="root"></div>
+
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect } = React;
+
         const App = () => {
-            const [products, setProducts] = useState([{ id: 1, name: "منتج تجريبي", price: 100, img: "https://picsum.photos/400" }]);
-            const [admin, setAdmin] = useState(false);
-            const addP = (e) => {
+            // بيانات المنتجات (يمكنك تغييرها من لوحة المسؤول لاحقاً)
+            const [products, setProducts] = useState([
+                { id: 1, name: "ساعة أوميقا كلاسيك", price: 2100, img: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=600", category: "ساعات" },
+                { id: 2, name: "نظارة ريبان سوداء", price: 850, img: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600", category: "إكسسوارات" }
+            ]);
+            
+            const [isAdmin, setIsAdmin] = useState(false);
+            const [cartCount, setCartCount] = useState(0);
+
+            // دالة إضافة منتج برمجياً
+            const handleAddProduct = (e) => {
                 e.preventDefault();
                 const f = new FormData(e.target);
-                setProducts([{ id: Date.now(), name: f.get('n'), price: f.get('p'), img: f.get('i') }, ...products]);
+                const newP = {
+                    id: Date.now(),
+                    name: f.get('n'),
+                    price: f.get('p'),
+                    img: f.get('i'),
+                    category: "وصل حديثاً"
+                };
+                setProducts([newP, ...products]);
                 e.target.reset();
+                alert("تم إضافة المنتج بنجاح!");
             };
+
             return (
-                <div class="min-h-screen p-5">
-                    <nav class="flex justify-between p-4 bg-white rounded-2xl shadow mb-5">
-                        <h1 class="text-xl font-bold">ELITE.</h1>
-                        <button onClick={() => setAdmin(!admin)} class="text-xs bg-black text-white px-3 py-1 rounded-full">{admin ? 'خروج' : 'دخول المسؤول'}</button>
-                    </nav>
-                    {admin && (
-                        <form onSubmit={addP} class="bg-white p-5 rounded-2xl mb-10 grid gap-3">
-                            <input name="n" placeholder="اسم المنتج" class="p-2 border rounded" required />
-                            <input name="p" placeholder="السعر" class="p-2 border rounded" required />
-                            <input name="i" placeholder="رابط الصورة" class="p-2 border rounded" required />
-                            <button class="bg-blue-600 text-white p-2 rounded">إضافة</button>
-                        </form>
-                    )}
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {products.map(p => (
-                            <div key={p.id} class="bg-white p-3 rounded-2xl shadow">
-                                <img src={p.img} class="h-40 w-full object-cover rounded-xl" />
-                                <h3 class="font-bold mt-2">{p.name}</h3>
-                                <p class="text-blue-600 font-bold">{p.price} ر.س</p>
+                <div className="min-h-screen pb-20">
+                    {/* الهيدر الاحترافي */}
+                    <nav className="glass sticky top-0 z-50 px-6 py-4">
+                        <div className="max-w-7xl mx-auto flex justify-between items-center">
+                            <h1 className="text-2xl font-black tracking-tighter text-black">ELITE.</h1>
+                            
+                            <div className="flex items-center gap-6">
+                                <button onClick={() => setIsAdmin(!isAdmin)} className="text-[10px] font-bold uppercase tracking-widest bg-gray-100 px-3 py-1 rounded-full">
+                                    {isAdmin ? 'Logout' : 'Admin'}
+                                </button>
+                                <div className="relative cursor-pointer" onClick={() => alert('السلة ستكون جاهزة في التحديث القادم!')}>
+                                    <span className="text-xl">🛒</span>
+                                    {cartCount > 0 && <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">{cartCount}</span>}
+                                </div>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    </nav>
+
+                    {/* قسم الترحيب (Hero Section) */}
+                    <header className="py-20 px-6 text-center bg-white border-b mb-12">
+                        <h2 className="text-5xl md:text-7xl font-black mb-6 text-gray-900 tracking-tight">الفخامة في كل تفصيل.</h2>
+                        <p className="text-gray-500 text-lg max-w-2xl mx-auto">اكتشف مجموعتنا المختارة من أرقى الساعات والإكسسوارات العالمية التي تعكس شخصيتك الفريدة.</p>
+                    </header>
+
+                    <main className="max-w-7xl mx-auto px-6">
+                        {/* لوحة المسؤول (تظهر عند الضغط على Admin) */}
+                        {isAdmin && (
+                            <div className="mb-16 p-8 bg-black rounded-[2.5rem] text-white shadow-2xl">
+                                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2"><span>✨</span> إضافة منتج جديد للمتجر</h3>
+                                <form onSubmit={handleAddProduct} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <input name="n" placeholder="اسم المنتج" className="p-4 rounded-2xl bg-white/10 border border-white/20 outline-none focus:bg-white/20 transition" required />
+                                    <input name="p" type="number" placeholder="السعر (ر.س)" className="p-4 rounded-2xl bg-white/10 border border-white/20 outline-none focus:bg-white/20 transition" required />
+                                    <input name="i" placeholder="رابط الصورة (URL)" className="p-4 rounded-2xl bg-white/10 border border-white/20 outline-none focus:bg-white/20 transition" required />
+                                    <button className="md:col-span-3 bg-white text-black py-4 rounded-2xl font-black hover:bg-gray-200 transition-all uppercase tracking-widest">نشر الآن</button>
+                                </form>
+                            </div>
+                        )}
+
+                        {/* شبكة المنتجات */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                            {products.map(p => (
+                                <div key={p.id} className="product-card group bg-white rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm p-3">
+                                    <div className="relative h-80 overflow-hidden rounded-[1.5rem]">
+                                        <img src={p.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                                             onError={(e) => e.target.src='https://via.placeholder.com/600x800?text=Check+Image+Link'} />
+                                        <div className="absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">{p.category}</div>
+                                    </div>
+                                    
+                                    <div className="p-6">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <h4 className="text-xl font-bold text-gray-900">{p.name}</h4>
+                                            <span className="text-blue-600 font-black">{p.price} ر.س</span>
+                                        </div>
+                                        <button 
+                                            onClick={() => setCartCount(cartCount + 1)}
+                                            className="w-full py-4 rounded-xl bg-gray-50 text-black border border-gray-200 font-bold hover:bg-black hover:text-white transition-all duration-300"
+                                        >
+                                            إضافة للسلة
+                                        </button>
+                                        
+                                        {isAdmin && (
+                                            <button onClick={() => setProducts(products.filter(x => x.id !== p.id))} className="w-full mt-3 text-red-500 text-xs font-bold underline">حذف المنتج</button>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </main>
+
+                    {/* الفوتر */}
+                    <footer className="mt-32 py-10 border-t text-center">
+                        <p className="text-gray-400 text-sm tracking-widest uppercase">Elite Store © 2026 | All Rights Reserved</p>
+                    </footer>
                 </div>
             );
         };
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
